@@ -1,1 +1,1 @@
-![](https://github.com/actions/Cred1Tor/backend-project-lvl3/workflows/Node.js%20CI/badge.svg)
+![](https://github.com/Cred1Tor/backend-project-lvl3/workflows/Node.js%20CI/badge.svg)
