@@ -13,13 +13,13 @@ beforeEach(async () => {
 });
 
 test('load and save a page', async () => {
-  const data = await readFixture('page.html');
+  const expectedHtml = await readFixture('page.html');
   nock('https://fakeaddress.com')
     .log(console.log)
     .get('/')
-    .reply(200, data);
+    .reply(200, expectedHtml);
 
   await load('https://fakeaddress.com', os.tmpdir());
   const result = await fs.readFile(path.join(os.tmpdir(), 'fakeaddress-com.html'), 'utf-8');
-  expect(result).toBe(data);
+  expect(result).toBe(expectedHtml);
 });
