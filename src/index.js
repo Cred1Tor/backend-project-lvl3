@@ -1,5 +1,6 @@
 import axios from 'axios';
 import path from 'path';
+import cheerio from 'cheerio';
 import { promises as fs } from 'fs';
 
 const convertUrlToFileName = (sourceUrl) => {
@@ -11,7 +12,8 @@ const convertUrlToFileName = (sourceUrl) => {
 
 export default (sourceUrl, destDir = process.cwd()) => axios.get(sourceUrl)
   .then((response) => {
+    const $ = cheerio.load(response.data);
     const fileName = convertUrlToFileName(sourceUrl);
     const dest = path.join(destDir, fileName);
-    return fs.writeFile(dest, response.data);
+    fs.writeFile(dest, $.html());
   });
