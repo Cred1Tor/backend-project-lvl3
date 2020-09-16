@@ -10,8 +10,8 @@ const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
 const readFile = (baseDir, filename, encoding = 'utf-8') => fs.readFile(path.join(baseDir, filename), encoding);
 
 beforeEach(async () => {
-  await fs.rmdir(testResultDirpath, { recursive: true }).catch((e) => console.log(e));
-  await fs.mkdir(testResultDirpath);
+  await fs.rmdir(testResultDirpath, { recursive: true }).catch(console.log);
+  await fs.mkdir(testResultDirpath).catch(console.log);
 });
 
 test('load and save a page with assets', async () => {
