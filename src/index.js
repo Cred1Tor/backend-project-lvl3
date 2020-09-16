@@ -2,6 +2,7 @@ import axios from 'axios';
 import path from 'path';
 import cheerio from 'cheerio';
 import url from 'url';
+import _ from 'lodash';
 import { promises as fs } from 'fs';
 
 const convertUrlToFileName = (sourceUrl) => {
@@ -17,46 +18,44 @@ const convertRelUrlToFileName = (relUrl) => {
   return `${fileName}${pathData.ext}`;
 };
 
-const saveFile = (source, dest) => axios.get(source)
+const saveFile = (source, dest) => axios.get(source, { responseType: 'arraybuffer' })
   .then((response) => fs.writeFile(dest, response.data));
 
 export default (sourceUrl, destDir = process.cwd()) => {
-  const sourceUrlData = new URL(sourceUrl);
-  const sourceHost = sourceUrlData.host;
-  const dirName = `${convertUrlToFileName(sourceUrl)}_files`;
-  const fileName = convertUrlToFileName(sourceUrl);
-  const dest = path.join(destDir, `${fileName}.html`);
-  const destAssetsDir = path.join(destDir, dirName);
+  const assetsDirName = `${convertUrlToFileName(sourceUrl)}_files`;
+  const fileName = `${convertUrlToFileName(sourceUrl)}.html`;
+  const destFilepath = path.join(destDir, fileName);
+  const destAssetsDirpath = path.join(destDir, assetsDirName);
   let $;
-  let elements;
+
   return axios.get(sourceUrl)
     .then((response) => {
       $ = cheerio.load(response.data);
-      return fs.writeFile(dest, $.html());
-    }).then(() => {
-      elements = $('link, script, img[src]');
-      if (elements.length === 0) {
-        throw new Error('no links');
-      }
-      return fs.mkdir(destAssetsDir).catch(() => {});
-    }).then(() => {
+      const elements = $('link[src], script[src], img[src]');
       const promises = [];
-      elements.each((i, el) => {
-        const elSrc = cheerio(el).attr('src');
-        const elSrcUrl = new URL(elSrc, sourceUrl);
-        if (elSrcUrl.host !== sourceHost) {
-          return;
-        }
-        // console.log(elSrc);
-        const elFileName = convertRelUrlToFileName(elSrc);
-        const newPath = path.join(dirName, elFileName);
-        // console.log(elFileName);
-        // console.log(newPath);
-        $(el).attr('src', newPath);
-        promises.push(saveFile(url.resolve(sourceUrl, elSrc), path.join(destAssetsDir, elFileName)));
-      });
-      return Promise.all(promises);
-    });
-};
 
-// console.log(new URL('example.html', 'https://fake.com/123.html'));
+      elements.each((_i, el) => {
+        const elSrc = cheerio(el).attr('src');
+
+        try {
+          URL(elSrc); // throw if url is relative
+        } catch (e) {
+          const elFilename = convertRelUrlToFileName(elSrc);
+          const elFilepath = path.join(assetsDirName, elFilename);
+          cheerio(el).attr('src', elFilepath);
+          const promise = saveFile(
+            url.resolve(sourceUrl, elSrc),
+            path.join(destAssetsDirpath, elFilename),
+          );
+          promises.push(promise);
+        }
+      });
+
+      if (promises.length === 0) { // not making a dir if no local assets
+        return null;
+      }
+
+      return fs.mkdir(destAssetsDirpath, { resursive: true }).catch(_.noop)
+        .then(() => Promise.all(promises));
+    }).then(() => fs.writeFile(destFilepath, $.html()));
+};
