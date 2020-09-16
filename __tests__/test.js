@@ -10,7 +10,7 @@ const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
 const readFile = (baseDir, filename, encoding = 'utf-8') => fs.readFile(path.join(baseDir, filename), encoding);
 
 beforeEach(async () => {
-  await fs.rmdir(testResultDirpath, { recursive: true }).catch(_.noop);
+  await fs.rmdir(testResultDirpath, { recursive: true }).catch((e) => console.log(e));
   await fs.mkdir(testResultDirpath);
 });
 
