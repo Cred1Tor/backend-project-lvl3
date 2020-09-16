@@ -38,7 +38,8 @@ export default (sourceUrl, destDir = process.cwd()) => {
         const elSrc = cheerio(el).attr('src');
 
         try {
-          URL(elSrc); // throw if url is relative
+          // eslint-disable-next-line no-new
+          new URL(elSrc); // throw if url is relative
         } catch (e) {
           const elFilename = convertRelUrlToFileName(elSrc);
           const elFilepath = path.join(assetsDirName, elFilename);
