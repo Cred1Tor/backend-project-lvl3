@@ -5,30 +5,74 @@ import os from 'os';
 import _ from 'lodash';
 import load from '../src/index.js';
 
-const getFixturePath = (fixtureName) => path.join(__dirname, `__fixtures__/${fixtureName}`);
-const readFixture = (fixtureName) => fs.readFile(getFixturePath(fixtureName), 'utf-8');
+const fixturesDirpath = path.join(__dirname, '__fixtures__');
+const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
+const readFile = (baseDir, filename, encoding = 'utf-8') => fs.readFile(path.join(baseDir, filename), encoding);
 
 beforeEach(async () => {
-  await fs.unlink(path.join(os.tmpdir(), 'fakeaddress-com.html')).catch(_.noop);
-  await fs.rmdir(path.join(os.tmpdir(), 'fakeaddress-com_files'), { recursive: true }).catch(_.noop);
+  await fs.rmdir(testResultDirpath, { recursive: true }).catch(_.noop);
+  await fs.mkdir(testResultDirpath);
 });
 
-test('load and save a page', async () => {
-  const expectedHtml = await readFixture('page.html');
-  const expectedCss = await readFixture('123.css');
+test('load and save a page with assets', async () => {
+  const promises = [
+    readFile(fixturesDirpath, 'page.html'),
+    readFile(fixturesDirpath, 'result.html'),
+    readFile(fixturesDirpath, '123.css'),
+    readFile(fixturesDirpath, 'pogey.png', null),
+  ];
+  const [srcHtml, expectedHtml, textAsset, imageAsset] = await Promise.all(promises);
+
   nock('https://fakeaddress.com')
     .log(console.log)
     .get('/')
-    .reply(200, expectedHtml);
+    .reply(200, srcHtml);
 
   nock('https://fakeaddress.com')
     .log(console.log)
     .get('/123.css')
-    .reply(200, expectedCss);
+    .reply(200, textAsset);
 
-  await load('https://fakeaddress.com/', os.tmpdir());
-  const result = await fs.readFile(path.join(os.tmpdir(), 'fakeaddress-com.html'), 'utf-8');
-  const resultCss = await fs.readFile(path.join(os.tmpdir(), 'fakeaddress-com_files/123.css'), 'utf-8');
-  expect(result).toBe(expectedHtml);
-  expect(resultCss).toBe(expectedCss);
+  nock('https://fakeaddress.com')
+    .log(console.log)
+    .get('/pogey.png')
+    .reply(200, imageAsset);
+
+  await load('https://fakeaddress.com/', testResultDirpath);
+  const promises2 = [
+    readFile(testResultDirpath, 'fakeaddress-com.html'),
+    readFile(testResultDirpath, 'fakeaddress-com_files/123.css'),
+    readFile(testResultDirpath, 'fakeaddress-com_files/pogey.png', null),
+    fs.readdir(testResultDirpath),
+    fs.readdir(path.join(testResultDirpath, 'fakeaddress-com_files')),
+  ];
+  const [
+    resultHtml,
+    resultTextAsset,
+    resultImageAsset,
+    dir1Files,
+    dir2Files,
+  ] = await Promise.all(promises2);
+
+  expect(resultHtml).toBe(expectedHtml);
+  expect(resultTextAsset).toBe(textAsset);
+  expect(resultImageAsset).toEqual(imageAsset);
+  expect(dir1Files).toHaveLength(2);
+  expect(dir2Files).toHaveLength(2);
+});
+
+test('load and save a page without assets', async () => {
+  const srcHtml = await readFile(fixturesDirpath, 'page2.html');
+
+  nock('https://fakeaddress2.com')
+    .log(console.log)
+    .get('/')
+    .reply(200, srcHtml);
+
+  await load('https://fakeaddress2.com/', testResultDirpath);
+  const resultHtml = await readFile(testResultDirpath, 'fakeaddress2-com.html');
+  const dirFiles = await fs.readdir(testResultDirpath);
+
+  expect(resultHtml).toBe(srcHtml);
+  expect(dirFiles).toHaveLength(1);
 });
