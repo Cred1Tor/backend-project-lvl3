@@ -24,17 +24,14 @@ test('load and save a page with assets', async () => {
   const [srcHtml, expectedHtml, textAsset, imageAsset] = await Promise.all(promises);
 
   nock('https://fakeaddress.com')
-    .log(console.log)
     .get('/')
     .reply(200, srcHtml);
 
   nock('https://fakeaddress.com')
-    .log(console.log)
     .get('/123.css')
     .reply(200, textAsset);
 
   nock('https://fakeaddress.com')
-    .log(console.log)
     .get('/pogey.png')
     .reply(200, imageAsset);
 
@@ -65,7 +62,6 @@ test('load and save a page without assets', async () => {
   const srcHtml = await readFile(fixturesDirpath, 'page2.html');
 
   nock('https://fakeaddress2.com')
-    .log(console.log)
     .get('/')
     .reply(200, srcHtml);
 
