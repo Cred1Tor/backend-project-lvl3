@@ -5,6 +5,12 @@ import url from 'url';
 import _ from 'lodash';
 import { promises as fs } from 'fs';
 
+const tagSrcMapping = {
+  link: 'href',
+  script: 'src',
+  img: 'src',
+};
+
 const convertUrlToFileName = (sourceUrl) => {
   const urlData = new URL(sourceUrl);
   const urlWithoutOrigin = `${urlData.host}${urlData.pathname}`;
@@ -14,7 +20,7 @@ const convertUrlToFileName = (sourceUrl) => {
 
 const convertRelUrlToFileName = (relUrl) => {
   const pathData = path.parse(relUrl);
-  const fileName = `${pathData.dir.slice(1)}-${pathData.name}`.replace(/^-/, '').replace(/[^a-zA-Z0-9]/g, '-');
+  const fileName = `${pathData.dir}-${pathData.name}`.replace(/^-/, '').replace(/[^a-zA-Z0-9]/g, '-');
   return `${fileName}${pathData.ext}`;
 };
 
@@ -31,11 +37,13 @@ export default (sourceUrl, destDir = process.cwd()) => {
   return axios.get(sourceUrl)
     .then((response) => {
       $ = cheerio.load(response.data);
-      const elements = $('link[src], script[src], img[src]');
+      const elements = $('link[href], script[src], img[src]');
       const promises = [];
 
       elements.each((_i, el) => {
-        const elSrc = cheerio(el).attr('src');
+        const $el = cheerio(el);
+        const urlAttrName = tagSrcMapping[el.tagName];
+        const elSrc = $el.attr(urlAttrName);
 
         try {
           // eslint-disable-next-line no-new
@@ -43,7 +51,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
         } catch (e) {
           const elFilename = convertRelUrlToFileName(elSrc);
           const elFilepath = path.join(assetsDirName, elFilename);
-          cheerio(el).attr('src', elFilepath);
+          $el.attr(urlAttrName, elFilepath);
           const promise = saveFile(
             url.resolve(sourceUrl, elSrc),
             path.join(destAssetsDirpath, elFilename),
