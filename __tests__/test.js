@@ -28,7 +28,7 @@ test('load and save a page with assets', async () => {
     .reply(200, srcHtml);
 
   nock('https://fakeaddress.com')
-    .get('/123.css')
+    .get('/files/123.css')
     .reply(200, textAsset);
 
   nock('https://fakeaddress.com')
@@ -38,7 +38,7 @@ test('load and save a page with assets', async () => {
   await load('https://fakeaddress.com/', testResultDirpath);
   const promises2 = [
     readFile(testResultDirpath, 'fakeaddress-com.html'),
-    readFile(testResultDirpath, 'fakeaddress-com_files/123.css'),
+    readFile(testResultDirpath, 'fakeaddress-com_files/files-123.css'),
     readFile(testResultDirpath, 'fakeaddress-com_files/pogey.png', null),
     fs.readdir(testResultDirpath),
     fs.readdir(path.join(testResultDirpath, 'fakeaddress-com_files')),
