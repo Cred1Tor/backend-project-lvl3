@@ -11,7 +11,7 @@ const readFile = (baseDir, filename, encoding = 'utf-8') => fs.readFile(path.joi
 
 beforeEach(async () => {
   await fs.rmdir(testResultDirpath, { recursive: true }).catch(_.noop);
-  await fs.mkdir(testResultDirpath).catch(_.noop);
+  await fs.mkdir(testResultDirpath);
 });
 
 test('load and save a page with assets', async () => {
