@@ -60,11 +60,11 @@ export default (sourceUrl, destDir = process.cwd()) => {
         }
       });
 
-      if (promises.length === 0) { // not making a dir if no local assets
-        return null;
+      if (promises.length === 0) { // only make a dest dir for html file if no assets
+        return fs.mkdir(destDir, { recursive: true }).catch(_.noop);
       }
 
-      return fs.mkdir(destAssetsDirpath, { resursive: true }).catch(_.noop)
+      return fs.mkdir(destAssetsDirpath, { recursive: true })
         .then(() => Promise.all(promises));
     }).then(() => fs.writeFile(destFilepath, $.html()));
 };
