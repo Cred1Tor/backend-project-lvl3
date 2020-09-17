@@ -16,4 +16,4 @@ Use --output flag to choose output directory (default is current working directo
 
 ## Examples
 
-[![asciicast](https://asciinema.org/a/IQdym9asoSvAdeoVqy4DO1hgn.svg)](https://asciinema.org/a/IQdym9asoSvAdeoVqy4DO1hgn)
+[![asciicast](https://asciinema.org/a/fFUeb1Is2QsAImEvBvfwBedFY.svg)](https://asciinema.org/a/fFUeb1Is2QsAImEvBvfwBedFY)
