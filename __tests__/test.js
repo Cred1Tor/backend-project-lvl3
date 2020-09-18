@@ -13,7 +13,7 @@ const readFile = (baseDir, filename, encoding = 'utf-8') => fs.readFile(path.joi
 
 beforeEach(async () => {
   await fs.rmdir(testResultDirpath, { recursive: true }).catch(_.noop);
-  await fs.mkdir(testResultDirpath).catch(_.noop);
+  await fs.mkdir(testResultDirpath);
 });
 
 test('load and save a page with assets', async () => {
@@ -23,7 +23,7 @@ test('load and save a page with assets', async () => {
     readFile(fixturesDirpath, '123.css'),
     readFile(fixturesDirpath, 'pogey.png', null),
   ];
-  const [srcHtml, expectedHtml, textAsset, imageAsset] = await Promise.all(promises).catch(_.noop);
+  const [srcHtml, expectedHtml, textAsset, imageAsset] = await Promise.all(promises);
 
   nock('https://fakeaddress.com')
     .get('/')
@@ -37,7 +37,7 @@ test('load and save a page with assets', async () => {
     .get('/pogey.png')
     .reply(200, imageAsset);
 
-  await load('https://fakeaddress.com/', testResultDirpath).catch(_.noop);
+  await load('https://fakeaddress.com/', testResultDirpath);
   const promises2 = [
     readFile(testResultDirpath, 'fakeaddress-com.html'),
     readFile(testResultDirpath, 'fakeaddress-com_files/files-123.css'),
@@ -51,7 +51,7 @@ test('load and save a page with assets', async () => {
     resultImageAsset,
     dir1Files,
     dir2Files,
-  ] = await Promise.all(promises2).catch(_.noop);
+  ] = await Promise.all(promises2);
 
   expect(resultHtml).toBe(expectedHtml);
   expect(resultTextAsset).toBe(textAsset);
@@ -67,9 +67,9 @@ test('load and save a page without assets', async () => {
     .get('/')
     .reply(200, srcHtml);
 
-  await load('https://fakeaddress2.com/', testResultDirpath).catch(_.noop);
-  const resultHtml = await readFile(testResultDirpath, 'fakeaddress2-com.html').catch(_.noop);
-  const dirFiles = await fs.readdir(testResultDirpath).catch(_.noop);
+  await load('https://fakeaddress2.com/', testResultDirpath);
+  const resultHtml = await readFile(testResultDirpath, 'fakeaddress2-com.html');
+  const dirFiles = await fs.readdir(testResultDirpath);
 
   expect(resultHtml).toBe(srcHtml);
   expect(dirFiles).toHaveLength(1);
