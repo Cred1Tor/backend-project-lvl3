@@ -5,6 +5,8 @@ import url from 'url';
 import _ from 'lodash';
 import { promises as fs } from 'fs';
 
+process.on('unhandledRejection', console.log);
+
 const tagSrcMapping = {
   link: 'href',
   script: 'src',
