@@ -46,4 +46,4 @@ jobs:
       env:
         CC_TEST_REPORTER_ID: 86df5480bb0bfa2719afd44887faa5f249514e79db71d5110189990a9d895e52
       with:
-        coverageCommand: npx run coverage
+        coverageCommand: npx jest --ci --coverage
