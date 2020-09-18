@@ -1,6 +1,8 @@
 # Page Loader
 
-![](https://github.com/Cred1Tor/backend-project-lvl3/workflows/Node.js%20CI/badge.svg)
+[![Github Actions Status](https://github.com/Cred1Tor/backend-project-lvl3/workflows/Node.js%20CI/badge.svg)](https://github.com/Cred1Tor/backend-project-lvl3/actions)
+[![Maintainability](https://api.codeclimate.com/v1/badges/fedd2dfd19d6d98765df/maintainability)](https://codeclimate.com/github/Cred1Tor/backend-project-lvl3/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/fedd2dfd19d6d98765df/test_coverage)](https://codeclimate.com/github/Cred1Tor/backend-project-lvl3/test_coverage)
 
 A tool for downloading and saving web pages.
 
