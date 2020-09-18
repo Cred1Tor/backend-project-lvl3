@@ -27,7 +27,7 @@ const convertRelUrlToFileName = (relUrl) => {
 };
 
 const saveFile = (source, dest) => axios.get(source, { responseType: 'arraybuffer' })
-  .then((response) => fs.writeFile(dest, response.data));
+  .then((response) => fs.writeFile(dest, response.data)).catch(console.log);
 
 export default (sourceUrl, destDir = process.cwd()) => {
   const assetsDirName = `${convertUrlToFileName(sourceUrl)}_files`;
@@ -67,6 +67,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
       }
 
       return fs.mkdir(destAssetsDirpath, { recursive: true })
-        .then(() => Promise.all(promises));
-    }).then(() => fs.writeFile(destFilepath, $.html()));
+        .then(() => Promise.all(promises)).catch(console.log);
+    }).catch(console.log).then(() => fs.writeFile(destFilepath, $.html()))
+    .catch(console.log);
 };
