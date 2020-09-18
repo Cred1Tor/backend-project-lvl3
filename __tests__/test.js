@@ -5,7 +5,7 @@ import os from 'os';
 import _ from 'lodash';
 import load from '../src/index.js';
 
-process.on('unhandledRejection', console.log);
+// process.on('unhandledRejection', console.log);
 
 const fixturesDirpath = path.join(__dirname, '__fixtures__');
 const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
