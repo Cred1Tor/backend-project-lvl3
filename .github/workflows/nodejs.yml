@@ -32,9 +32,8 @@ jobs:
         CI: true
 
   coverage:
-    # needs: [ test ]
-  - name: Code Climate Coverage Action
-    uses: paambaati/codeclimate-action@v2.6.0
+    needs: [ test ]
+    name: Code Climate Coverage Action 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -44,6 +43,7 @@ jobs:
     - run: npm install -g yarn
     - run: yarn install
     - run: yarn build
+    - uses: paambaati/codeclimate-action@v2.6.0
       env:
         CC_TEST_REPORTER_ID: 86df5480bb0bfa2719afd44887faa5f249514e79db71d5110189990a9d895e52
       with:
