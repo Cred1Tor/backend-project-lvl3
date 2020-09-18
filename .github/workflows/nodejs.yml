@@ -19,6 +19,8 @@ jobs:
     #     node-version: [10.x, 12.x]
 
     steps:
+    - name: Code Climate Coverage Action
+      uses: paambaati/codeclimate-action@v2.6.0
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -30,3 +32,4 @@ jobs:
     - run: npm test
       env:
         CI: true
+        CC_TEST_REPORTER_ID: 86df5480bb0bfa2719afd44887faa5f249514e79db71d5110189990a9d895e52
