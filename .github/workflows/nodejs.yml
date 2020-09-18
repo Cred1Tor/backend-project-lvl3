@@ -32,7 +32,7 @@ jobs:
         CI: true
 
   coverage:
-    needs: [ test ]
+    # needs: [ test ]
   - name: Code Climate Coverage Action
     uses: paambaati/codeclimate-action@v2.6.0
     runs-on: ubuntu-latest
