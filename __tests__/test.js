@@ -22,6 +22,8 @@ test('load and save a page with assets', async () => {
     readFile(fixturesDirpath, 'pogey.png', null),
   ];
   const [srcHtml, expectedHtml, textAsset, imageAsset] = await Promise.all(promises);
+  const test1Dirpath = path.join(testResultDirpath, 'test1');
+  await fs.mkdir(test1Dirpath);
 
   nock('https://fakeaddress.com')
     .get('/')
@@ -35,14 +37,16 @@ test('load and save a page with assets', async () => {
     .get('/pogey.png')
     .reply(200, imageAsset);
 
-  await load('https://fakeaddress.com/', testResultDirpath);
+  await load('https://fakeaddress.com/', test1Dirpath);
+
   const promises2 = [
-    readFile(testResultDirpath, 'fakeaddress-com.html'),
-    readFile(testResultDirpath, 'fakeaddress-com_files/files-123.css'),
-    readFile(testResultDirpath, 'fakeaddress-com_files/pogey.png', null),
-    fs.readdir(testResultDirpath),
-    fs.readdir(path.join(testResultDirpath, 'fakeaddress-com_files')),
+    readFile(test1Dirpath, 'fakeaddress-com.html'),
+    readFile(test1Dirpath, 'fakeaddress-com_files/files-123.css'),
+    readFile(test1Dirpath, 'fakeaddress-com_files/pogey.png', null),
+    fs.readdir(path.join(test1Dirpath, '')),
+    fs.readdir(path.join(test1Dirpath, 'fakeaddress-com_files')),
   ];
+
   const [
     resultHtml,
     resultTextAsset,
@@ -60,14 +64,16 @@ test('load and save a page with assets', async () => {
 
 test('load and save a page without assets', async () => {
   const srcHtml = await readFile(fixturesDirpath, 'page2.html');
+  const test2Dirpath = path.join(testResultDirpath, 'test2');
+  await fs.mkdir(test2Dirpath);
 
   nock('https://fakeaddress2.com')
     .get('/')
     .reply(200, srcHtml);
 
-  await load('https://fakeaddress2.com/', testResultDirpath);
-  const resultHtml = await readFile(testResultDirpath, 'fakeaddress2-com.html');
-  const dirFiles = await fs.readdir(testResultDirpath);
+  await load('https://fakeaddress2.com/', test2Dirpath);
+  const resultHtml = await readFile(test2Dirpath, 'fakeaddress2-com.html');
+  const dirFiles = await fs.readdir(test2Dirpath);
 
   expect(resultHtml).toBe(srcHtml);
   expect(dirFiles).toHaveLength(1);
