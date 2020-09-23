@@ -4,6 +4,8 @@ import cheerio from 'cheerio';
 import { promises as fs } from 'fs';
 import debug from 'debug';
 
+require('axios-debug-log');
+
 const log = debug('page-loader:log');
 const error = debug('page-loader:error');
 
