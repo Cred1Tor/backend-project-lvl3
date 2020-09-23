@@ -19,3 +19,6 @@ Use --output flag to choose output directory (default is current working directo
 ## Examples
 
 [![asciicast](https://asciinema.org/a/fFUeb1Is2QsAImEvBvfwBedFY.svg)](https://asciinema.org/a/fFUeb1Is2QsAImEvBvfwBedFY)
+
+With Debug logging
+[![asciicast](https://asciinema.org/a/bCLwRl7a7LTqWZqmKtP7WWwPl.svg)](https://asciinema.org/a/bCLwRl7a7LTqWZqmKtP7WWwPl)
