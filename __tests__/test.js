@@ -3,7 +3,10 @@ import { promises as fs } from 'fs';
 import nock from 'nock';
 import os from 'os';
 import _ from 'lodash';
+import debug from 'debug';
 import load from '../src/index.js';
+
+const nockLog = debug('page-loader:nock-log');
 
 const fixturesDirpath = path.join(__dirname, '__fixtures__');
 const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
@@ -26,14 +29,17 @@ test('load and save a page with assets', async () => {
   await fs.mkdir(test1Dirpath);
 
   nock('https://fakeaddress.com')
+    .log(nockLog)
     .get('/')
     .reply(200, srcHtml);
 
   nock('https://fakeaddress.com')
+    .log(nockLog)
     .get('/files/123.css')
     .reply(200, textAsset);
 
   nock('https://fakeaddress.com')
+    .log(nockLog)
     .get('/pogey.png')
     .reply(200, imageAsset);
 
@@ -68,6 +74,7 @@ test('load and save a page without assets', async () => {
   await fs.mkdir(test2Dirpath);
 
   nock('https://fakeaddress2.com')
+    .log(nockLog)
     .get('/')
     .reply(200, srcHtml);
 
