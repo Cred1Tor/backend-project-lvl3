@@ -31,8 +31,7 @@ const convertRelUrlToFileName = (relUrl) => {
 const saveWebPageToFile = (source, dest) => {
   log(`saving page ${source} to file ${dest}`);
   return axios.get(source, { responseType: 'arraybuffer' })
-    .then((response) => fs.writeFile(dest, response.data))
-    .catch(error);
+    .then((response) => fs.writeFile(dest, response.data));
 };
 
 export default (sourceUrl, destDir = process.cwd()) => {
@@ -80,14 +79,23 @@ export default (sourceUrl, destDir = process.cwd()) => {
       if (promises.length === 0) { // only make a dest dir for html file if no assets
         return fs.mkdir(destDir, { recursive: true })
           .then(() => log(`${destDir} dir created`))
-          .catch(error);
+          .catch((e) => {
+            if (e.code === 'EEXIST') {
+              error(e.message);
+              return;
+            }
+            throw e;
+          });
       }
 
       return fs.mkdir(destAssetsDirpath, { recursive: true })
         .then(() => log(`${destAssetsDirpath} dir created`))
-        .catch(error)
         .then(() => Promise.all(promises));
     }).then(() => fs.writeFile(destFilepath, $.html())
       .then(() => log(`${destFilepath} written\nfinished\n---------------------------`))
-      .catch(error));
+      .catch((e) => {
+        error(e.message);
+        console.error(e);
+        throw e;
+      }));
 };
