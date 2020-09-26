@@ -41,10 +41,30 @@ export default (sourceUrl, destDir = process.cwd()) => {
   const destAssetsDirpath = path.join(destDir, assetsDirName);
   let $;
 
-  log(`saving ${sourceUrl} as ${fileName} in ${destFilepath}`);
+  log(`saving ${sourceUrl} as ${destFilepath}`);
   log(`assets dir: ${destAssetsDirpath}`);
 
-  return axios.get(sourceUrl)
+  return fs.stat(destDir)
+    .then((stats) => {
+      if (!stats.isDirectory()) {
+        throw new Error(`${destDir} is not a directory`, destDir);
+      }
+    })
+    .then(() => fs.access(destFilepath)
+      .catch(() => true)
+      .then((caught) => {
+        if (!caught) {
+          throw new Error(`${destFilepath} already exists`);
+        }
+      }))
+    .then(() => fs.access(destAssetsDirpath)
+      .catch(() => true)
+      .then((caught) => {
+        if (!caught) {
+          throw new Error(`${destAssetsDirpath} already exists`);
+        }
+      }))
+    .then(() => axios.get(sourceUrl))
     .then((response) => {
       $ = cheerio.load(response.data);
       const elements = $('link[href], script[src], img[src]');
@@ -67,35 +87,41 @@ export default (sourceUrl, destDir = process.cwd()) => {
           log(`new rel url: ${elFilepath}`);
           $el.attr(urlAttrName, elFilepath);
           const absSrcUrl = new URL(elSrc, sourceUrl);
-          const promise = saveWebPageToFile(
-            absSrcUrl.href,
-            path.join(destAssetsDirpath, elFilename),
-          );
+          const promise = fs.mkdir(destAssetsDirpath)
+            .then(() => log(`${destAssetsDirpath} dir created`))
+            .catch((err) => {
+              if (err.code === 'EEXIST') {
+                return;
+              }
+              throw err;
+            })
+            .then(() => saveWebPageToFile(
+              absSrcUrl.href,
+              path.join(destAssetsDirpath, elFilename),
+            ));
           promises.push(promise);
         }
       });
 
       log(`${promises.length} assets total`);
-      if (promises.length === 0) { // only make a dest dir for html file if no assets
-        return fs.mkdir(destDir, { recursive: true })
-          .then(() => log(`${destDir} dir created`))
-          .catch((e) => {
-            if (e.code === 'EEXIST') {
-              error(e.message);
-              return;
-            }
-            throw e;
-          });
-      }
+      // if (promises.length === 0) { // only make a dest dir for html file if no assets
+      //   return fs.mkdir(destDir)
+      //     .then(() => log(`${destDir} dir created`))
+      //     .catch((e) => {
+      //       if (e.code === 'EEXIST') {
+      //         error(e.message);
+      //         return;
+      //       }
+      //       throw e;
+      //     });
+      // }
 
-      return fs.mkdir(destAssetsDirpath, { recursive: true })
-        .then(() => log(`${destAssetsDirpath} dir created`))
-        .then(() => Promise.all(promises));
-    }).then(() => fs.writeFile(destFilepath, $.html())
-      .then(() => log(`${destFilepath} written\nfinished\n---------------------------`))
-      .catch((e) => {
-        error(e.message);
-        console.error(e);
-        throw e;
-      }));
+      return Promise.all(promises);
+    })
+    .then(() => fs.writeFile(destFilepath, $.html()))
+    .then(() => log(`${destFilepath} written\nfinished\n---------------------------`))
+    .catch((e) => {
+      error(e.message);
+      throw e;
+    });
 };
