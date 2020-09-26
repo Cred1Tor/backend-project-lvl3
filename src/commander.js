@@ -10,8 +10,7 @@ program.version(version)
     try {
       load(srcUrl, program.output);
     } catch (e) {
-      console.log(e.message);
-      console.error(e);
+      console.error(e.message);
       process.exitCode = 1;
     }
   });
