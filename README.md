@@ -22,3 +22,6 @@ Use --output flag to choose output directory (default is current working directo
 
 With Debug logging
 [![asciicast](https://asciinema.org/a/bCLwRl7a7LTqWZqmKtP7WWwPl.svg)](https://asciinema.org/a/bCLwRl7a7LTqWZqmKtP7WWwPl)
+
+Errors
+[![asciicast](https://asciinema.org/a/4afSpRgZ78hvF0bGE8hjAUp2a.svg)](https://asciinema.org/a/4afSpRgZ78hvF0bGE8hjAUp2a)
