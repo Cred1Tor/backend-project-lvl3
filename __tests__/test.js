@@ -103,11 +103,21 @@ test('errors', async () => {
   await fs.mkdir(test3Dirpath);
   const filepath = path.join(test3Dirpath, 'fakeaddress3-com.html');
   const dirpath = path.join(test3Dirpath, 'fakeaddress3-com_files');
+
   await fs.writeFile(filepath, '');
   const promise2 = load('https://fakeaddress3.com', test3Dirpath);
   await expect(promise2).rejects.toThrow('already exists');
   await fs.unlink(filepath);
   await fs.mkdir(dirpath);
+
   const promise3 = load('https://fakeaddress3.com', test3Dirpath);
   await expect(promise3).rejects.toThrow('already exists');
+
+  nock('https://unknownurl.com')
+    .log(nockLog)
+    .get('/')
+    .reply(404, '');
+
+  const promise4 = load('https://unknownurl.com', test3Dirpath);
+  await expect(promise4).rejects.toThrow('404');
 });

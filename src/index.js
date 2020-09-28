@@ -31,7 +31,10 @@ const convertRelUrlToFileName = (relUrl) => {
 const saveWebPageToFile = (source, dest) => {
   log(`saving page ${source} to file ${dest}`);
   return axios.get(source, { responseType: 'arraybuffer' })
-    .then((response) => fs.writeFile(dest, response.data));
+    .then((response) => fs.writeFile(dest, response.data))
+    .catch((e) => {
+      throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
+    });
 };
 
 export default (sourceUrl, destDir = process.cwd()) => {
@@ -54,17 +57,20 @@ export default (sourceUrl, destDir = process.cwd()) => {
       .catch(() => true)
       .then((caught) => {
         if (!caught) {
-          throw new Error(`${destFilepath} already exists`);
+          throw new Error(`${destFilepath} already exists`, destFilepath);
         }
       }))
     .then(() => fs.access(destAssetsDirpath)
       .catch(() => true)
       .then((caught) => {
         if (!caught) {
-          throw new Error(`${destAssetsDirpath} already exists`);
+          throw new Error(`${destAssetsDirpath} already exists`, destAssetsDirpath);
         }
       }))
-    .then(() => axios.get(sourceUrl))
+    .then(() => axios.get(sourceUrl)
+      .catch((e) => {
+        throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
+      }))
     .then((response) => {
       $ = cheerio.load(response.data);
       const elements = $('link[href], script[src], img[src]');
@@ -104,18 +110,6 @@ export default (sourceUrl, destDir = process.cwd()) => {
       });
 
       log(`${promises.length} assets total`);
-      // if (promises.length === 0) { // only make a dest dir for html file if no assets
-      //   return fs.mkdir(destDir)
-      //     .then(() => log(`${destDir} dir created`))
-      //     .catch((e) => {
-      //       if (e.code === 'EEXIST') {
-      //         error(e.message);
-      //         return;
-      //       }
-      //       throw e;
-      //     });
-      // }
-
       return Promise.all(promises);
     })
     .then(() => fs.writeFile(destFilepath, $.html()))
