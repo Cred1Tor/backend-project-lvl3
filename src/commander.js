@@ -8,7 +8,11 @@ program.version(version)
   .arguments('<srcUrl>')
   .action((srcUrl) => {
     try {
-      load(srcUrl, program.output);
+      load(srcUrl, program.output)
+        .catch((e) => {
+          console.error(e.message);
+          process.exitCode = 1;
+        });
     } catch (e) {
       console.error(e.message);
       process.exitCode = 1;
