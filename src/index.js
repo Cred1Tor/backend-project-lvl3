@@ -84,7 +84,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
       title: 'Saving assets',
       task: (ctx) => {
         const elements = ctx.$('link[href], script[src], img[src]');
-        const assetTasks = new Listr([], { concurrent: true });
+        const assetTasks = new Listr([], { concurrent: true, exitOnError: false });
 
         elements.each((_i, el) => {
           const $el = cheerio(el);
@@ -122,20 +122,18 @@ export default (sourceUrl, destDir = process.cwd()) => {
           }
         });
 
-        log(`${assetTasks.length} assets total`);
         return assetTasks;
       },
     },
     {
       title: 'Saving main page',
       task: (ctx) => fs.writeFile(ctx.destFilepath, ctx.$.html())
-        .then(() => log(`${ctx.destFilepath} written\nfinished\n---------------------------`))
-        .catch((e) => {
-          error(e.message);
-          throw e;
-        }),
+        .then(() => log(`${ctx.destFilepath} written\nfinished\n---------------------------`)),
     },
   ]);
 
-  return tasks.run();
+  return tasks.run().catch((e) => {
+    error(e.message);
+    throw e;
+  });
 };
