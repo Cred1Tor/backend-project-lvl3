@@ -18,10 +18,10 @@ Use --output flag to choose output directory (default is current working directo
 
 ## Examples
 
-[![asciicast](https://asciinema.org/a/fFUeb1Is2QsAImEvBvfwBedFY.svg)](https://asciinema.org/a/fFUeb1Is2QsAImEvBvfwBedFY)
+[![asciicast](https://asciinema.org/a/W3ZAMrvWZIamKGvf5XUrhSkVq.svg)](https://asciinema.org/a/W3ZAMrvWZIamKGvf5XUrhSkVq)
 
 With Debug logging
-[![asciicast](https://asciinema.org/a/bCLwRl7a7LTqWZqmKtP7WWwPl.svg)](https://asciinema.org/a/bCLwRl7a7LTqWZqmKtP7WWwPl)
+[![asciicast](https://asciinema.org/a/TsBtZzCoBhPH0IfjA2KFEz316.svg)](https://asciinema.org/a/TsBtZzCoBhPH0IfjA2KFEz316)
 
 Errors
-[![asciicast](https://asciinema.org/a/4afSpRgZ78hvF0bGE8hjAUp2a.svg)](https://asciinema.org/a/4afSpRgZ78hvF0bGE8hjAUp2a)
+[![asciicast](https://asciinema.org/a/uNR9DCyluZEjwHI5YHT9JYsTi.svg)](https://asciinema.org/a/uNR9DCyluZEjwHI5YHT9JYsTi)
