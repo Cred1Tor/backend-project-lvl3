@@ -1,6 +1,6 @@
 {
   "name": "page-loader",
-  "version": "0.2.5",
+  "version": "1.0.0",
   "description": "Page loader, a tool for downloading and saving web pages.",
   "main": "dist/index.js",
   "bin": {
