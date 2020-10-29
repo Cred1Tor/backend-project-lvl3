@@ -3,6 +3,7 @@ import path from 'path';
 import cheerio from 'cheerio';
 import { promises as fs } from 'fs';
 import debug from 'debug';
+import Listr from 'listr';
 
 require('axios-debug-log');
 
@@ -38,84 +39,103 @@ const saveWebPageToFile = (source, dest) => {
 };
 
 export default (sourceUrl, destDir = process.cwd()) => {
-  const assetsDirName = `${convertUrlToFileName(sourceUrl)}_files`;
-  const fileName = `${convertUrlToFileName(sourceUrl)}.html`;
-  const destFilepath = path.join(destDir, fileName);
-  const destAssetsDirpath = path.join(destDir, assetsDirName);
-  let $;
+  const tasks = new Listr([
+    {
+      title: `Connecting to ${sourceUrl}`,
+      task: (ctx) => {
+        const fileName = `${convertUrlToFileName(sourceUrl)}.html`;
+        ctx.assetsDirName = `${convertUrlToFileName(sourceUrl)}_files`;
+        ctx.destFilepath = path.join(destDir, fileName);
+        ctx.destAssetsDirpath = path.join(destDir, ctx.assetsDirName);
 
-  log(`saving ${sourceUrl} as ${destFilepath}`);
-  log(`assets dir: ${destAssetsDirpath}`);
+        log(`saving ${sourceUrl} as ${ctx.destFilepath}`);
+        log(`assets dir: ${ctx.destAssetsDirpath}`);
 
-  return fs.stat(destDir)
-    .then((stats) => {
-      if (!stats.isDirectory()) {
-        throw new Error(`${destDir} is not a directory`, destDir);
-      }
-    })
-    .then(() => fs.access(destFilepath)
-      .catch(() => true)
-      .then((caught) => {
-        if (!caught) {
-          throw new Error(`${destFilepath} already exists`, destFilepath);
-        }
-      }))
-    .then(() => fs.access(destAssetsDirpath)
-      .catch(() => true)
-      .then((caught) => {
-        if (!caught) {
-          throw new Error(`${destAssetsDirpath} already exists`, destAssetsDirpath);
-        }
-      }))
-    .then(() => axios.get(sourceUrl)
-      .catch((e) => {
-        throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
-      }))
-    .then((response) => {
-      $ = cheerio.load(response.data);
-      const elements = $('link[href], script[src], img[src]');
-      const promises = [];
-
-      elements.each((_i, el) => {
-        const $el = cheerio(el);
-        const urlAttrName = tagSrcMapping[el.tagName];
-        const elSrc = $el.attr(urlAttrName);
-        log(`working on tag ${el.tagName} with ${urlAttrName}="${elSrc}"`);
-
-        try {
-          // eslint-disable-next-line no-new
-          new URL(elSrc); // throw if url is relative
-          log('url is absolute, skip');
-        } catch (e) {
-          log('url is relative, process');
-          const elFilename = convertRelUrlToFileName(elSrc);
-          const elFilepath = path.join(assetsDirName, elFilename);
-          log(`new rel url: ${elFilepath}`);
-          $el.attr(urlAttrName, elFilepath);
-          const absSrcUrl = new URL(elSrc, sourceUrl);
-          const promise = fs.mkdir(destAssetsDirpath)
-            .then(() => log(`${destAssetsDirpath} dir created`))
-            .catch((err) => {
-              if (err.code === 'EEXIST') {
-                return;
+        return fs.stat(destDir)
+          .then((stats) => {
+            if (!stats.isDirectory()) {
+              throw new Error(`${destDir} is not a directory`, destDir);
+            }
+          })
+          .then(() => fs.access(ctx.destFilepath)
+            .catch(() => true)
+            .then((caught) => {
+              if (!caught) {
+                throw new Error(`${ctx.destFilepath} already exists`, ctx.destFilepath);
               }
-              throw err;
-            })
-            .then(() => saveWebPageToFile(
-              absSrcUrl.href,
-              path.join(destAssetsDirpath, elFilename),
-            ));
-          promises.push(promise);
-        }
-      });
+            }))
+          .then(() => fs.access(ctx.destAssetsDirpath)
+            .catch(() => true)
+            .then((caught) => {
+              if (!caught) {
+                throw new Error(`${ctx.destAssetsDirpath} already exists`, ctx.destAssetsDirpath);
+              }
+            }))
+          .then(() => axios.get(sourceUrl)
+            .catch((e) => {
+              throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
+            }))
+          .then((response) => {
+            ctx.$ = cheerio.load(response.data);
+          });
+      },
+    },
+    {
+      title: 'Saving assets',
+      task: (ctx) => {
+        const elements = ctx.$('link[href], script[src], img[src]');
+        const assetTasks = new Listr([], { concurrent: true });
 
-      log(`${promises.length} assets total`);
-      return Promise.all(promises);
-    })
-    .then(() => fs.writeFile(destFilepath, $.html()))
-    .then(() => log(`${destFilepath} written\nfinished\n---------------------------`))
-    .catch((e) => {
-      error(e.message);
-      throw e;
-    });
+        elements.each((_i, el) => {
+          const $el = cheerio(el);
+          const urlAttrName = tagSrcMapping[el.tagName];
+          const elSrc = $el.attr(urlAttrName);
+          log(`working on tag ${el.tagName} with ${urlAttrName}="${elSrc}"`);
+
+          try {
+            // eslint-disable-next-line no-new
+            new URL(elSrc); // throw if url is relative
+            log('url is absolute, skip');
+          } catch (e) {
+            log('url is relative, process');
+            const elFilename = convertRelUrlToFileName(elSrc);
+            const elFilepath = path.join(ctx.assetsDirName, elFilename);
+            log(`new rel url: ${elFilepath}`);
+            $el.attr(urlAttrName, elFilepath);
+            const absSrcUrl = new URL(elSrc, sourceUrl);
+            const promise = fs.mkdir(ctx.destAssetsDirpath)
+              .then(() => log(`${ctx.destAssetsDirpath} dir created`))
+              .catch((err) => {
+                if (err.code === 'EEXIST') {
+                  return;
+                }
+                throw err;
+              })
+              .then(() => saveWebPageToFile(
+                absSrcUrl.href,
+                path.join(ctx.destAssetsDirpath, elFilename),
+              ));
+            assetTasks.add({
+              title: `Saving ${elSrc}`,
+              task: () => promise,
+            });
+          }
+        });
+
+        log(`${assetTasks.length} assets total`);
+        return assetTasks;
+      },
+    },
+    {
+      title: 'Saving main page',
+      task: (ctx) => fs.writeFile(ctx.destFilepath, ctx.$.html())
+        .then(() => log(`${ctx.destFilepath} written\nfinished\n---------------------------`))
+        .catch((e) => {
+          error(e.message);
+          throw e;
+        }),
+    },
+  ]);
+
+  return tasks.run();
 };

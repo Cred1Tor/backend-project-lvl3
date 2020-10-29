@@ -87,8 +87,8 @@ test('load and save a page without assets', async () => {
 });
 
 test('errors', async () => {
-  const func = () => load('wrong url', testResultDirpath);
-  expect(func).toThrow('Invalid URL');
+  const promise1 = load('wrong url', testResultDirpath);
+  await expect(promise1).rejects.toThrow('Invalid URL');
 
   nock('https://fakeaddress3.com')
     .log(nockLog)
@@ -96,8 +96,8 @@ test('errors', async () => {
     .reply(200, '');
 
   const badPath = path.join(testResultDirpath, 'unknown');
-  const promise = load('https://fakeaddress3.com', badPath);
-  await expect(promise).rejects.toThrow('ENOENT');
+  const promise2 = load('https://fakeaddress3.com', badPath);
+  await expect(promise2).rejects.toThrow('ENOENT');
 
   const test3Dirpath = path.join(testResultDirpath, 'test3');
   await fs.mkdir(test3Dirpath);
@@ -105,19 +105,19 @@ test('errors', async () => {
   const dirpath = path.join(test3Dirpath, 'fakeaddress3-com_files');
 
   await fs.writeFile(filepath, '');
-  const promise2 = load('https://fakeaddress3.com', test3Dirpath);
-  await expect(promise2).rejects.toThrow('already exists');
+  const promise3 = load('https://fakeaddress3.com', test3Dirpath);
+  await expect(promise3).rejects.toThrow('already exists');
   await fs.unlink(filepath);
   await fs.mkdir(dirpath);
 
-  const promise3 = load('https://fakeaddress3.com', test3Dirpath);
-  await expect(promise3).rejects.toThrow('already exists');
+  const promise4 = load('https://fakeaddress3.com', test3Dirpath);
+  await expect(promise4).rejects.toThrow('already exists');
 
   nock('https://unknownurl.com')
     .log(nockLog)
     .get('/')
     .reply(404, '');
 
-  const promise4 = load('https://unknownurl.com', test3Dirpath);
-  await expect(promise4).rejects.toThrow('404');
+  const promise5 = load('https://unknownurl.com', test3Dirpath);
+  await expect(promise5).rejects.toThrow('404');
 });
