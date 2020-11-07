@@ -2,21 +2,20 @@
   "name": "page-loader",
   "version": "1.0.0",
   "description": "Page loader, a tool for downloading and saving web pages.",
-  "main": "dist/index.js",
+  "main": "src/index.js",
+  "type": "module",
   "bin": {
-    "save-page": "dist/bin/load.js"
+    "save-page": "src/bin/load.js"
   },
   "engines": {
     "node": ">=14"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
     "test": "DEBUG=page-loader*,axios jest",
-    "coverage": "jest --coverage",
-    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
-    "prepublishOnly": "npm run build"
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -30,6 +29,11 @@
   "jest": {
     "testEnvironment": "node"
   },
+  "babel": {
+    "plugins": [
+      "transform-es2015-modules-commonjs"
+    ]
+  },
   "homepage": "https://github.com/Cred1Tor/backend-project-lvl3#readme",
   "dependencies": {
     "axios": "^0.19.2",
@@ -41,13 +45,8 @@
     "lodash": "^4.17.19"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
-    "@babel/node": "^7.8.7",
-    "@babel/plugin-proposal-pipeline-operator": "^7.8.3",
-    "@babel/preset-env": "^7.9.0",
-    "babel-eslint": "^10.1.0",
-    "babel-jest": "^25.1.0",
+    "babel-jest": "^26.6.3",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-babel": "^5.3.0",
