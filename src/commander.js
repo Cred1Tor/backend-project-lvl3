@@ -1,5 +1,5 @@
 import program from 'commander';
-import load from '.';
+import load from './index.js';
 import { version } from '../package.json';
 
 program.version(version)
@@ -10,6 +10,7 @@ program.version(version)
     .catch((e) => {
       console.error(e.message);
       process.exitCode = 1;
-    }));
+    })
+    .then(() => console.log(`${srcUrl} saved in ${program.output}`)));
 
 export default () => program.parse(process.argv);

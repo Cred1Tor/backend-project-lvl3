@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import parseCommand from '../commander';
+import parseCommand from '../commander.js';
 
 parseCommand();
