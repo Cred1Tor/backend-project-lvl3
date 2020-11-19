@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "bin": {
-    "save-page": "src/bin/load.js"
+    "save-page": "src/bin/cli.js"
   },
   "engines": {
     "node": ">=14"

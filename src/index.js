@@ -5,6 +5,8 @@ import { promises as fs } from 'fs';
 import debug from 'debug';
 import Listr from 'listr';
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 require('axios-debug-log');
 
 const log = debug('page-loader:log');
