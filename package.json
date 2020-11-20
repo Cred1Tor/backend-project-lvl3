@@ -14,7 +14,7 @@
     "src"
   ],
   "scripts": {
-    "test": "DEBUG=page-loader*,axios node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "DEBUG=page-loader*,axios jest",
     "coverage": "jest --coverage"
   },
   "repository": {
