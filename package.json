@@ -14,7 +14,7 @@
     "src"
   ],
   "scripts": {
-    "test": "DEBUG=page-loader*,axios jest",
+    "test": "DEBUG=page-loader*,axios node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "coverage": "jest --coverage"
   },
   "repository": {
@@ -51,8 +51,8 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-jest": "^23.8.2",
-    "jest": "^25.1.0",
-    "jest-cli": "^25.1.0",
+    "jest": "^26.6.3",
+    "jest-cli": "^26.6.3",
     "nock": "^12.0.3"
   }
 }
