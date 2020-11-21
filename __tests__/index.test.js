@@ -3,14 +3,11 @@ import { promises as fs } from 'fs';
 import nock from 'nock';
 import os from 'os';
 import _ from 'lodash';
-import debug from 'debug';
 import load from '../src/index.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const nockLog = debug('page-loader:nock-log');
 
 const fixturesDirpath = path.join(__dirname, '__fixtures__');
 const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
@@ -33,17 +30,14 @@ test('load and save a page with assets', async () => {
   await fs.mkdir(test1Dirpath);
 
   nock('https://fakeaddress.com')
-    .log(nockLog)
     .get('/')
     .reply(200, srcHtml);
 
   nock('https://fakeaddress.com')
-    .log(nockLog)
     .get('/files/123.css')
     .reply(200, textAsset);
 
   nock('https://fakeaddress.com')
-    .log(nockLog)
     .get('/pogey.png')
     .reply(200, imageAsset);
 
@@ -78,7 +72,6 @@ test('load and save a page without assets', async () => {
   await fs.mkdir(test2Dirpath);
 
   nock('https://fakeaddress2.com')
-    .log(nockLog)
     .get('/')
     .reply(200, srcHtml);
 
@@ -95,7 +88,6 @@ test('errors', async () => {
   await expect(promise1).rejects.toThrow('Invalid URL');
 
   nock('https://fakeaddress3.com')
-    .log(nockLog)
     .get('/')
     .reply(200, '');
 
@@ -118,7 +110,6 @@ test('errors', async () => {
   await expect(promise4).rejects.toThrow('already exists');
 
   nock('https://unknownurl.com')
-    .log(nockLog)
     .get('/')
     .reply(404, '');
 

@@ -10,7 +10,7 @@
     "node": ">=14"
   },
   "scripts": {
-    "test": "DEBUG=page-loader*,axios jest",
+    "test": "DEBUG=page-loader*,axios,nock.common* jest",
     "coverage": "jest --coverage"
   },
   "repository": {
