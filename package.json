@@ -3,16 +3,12 @@
   "version": "1.0.0",
   "description": "Page loader, a tool for downloading and saving web pages.",
   "main": "src/index.js",
-  "type": "module",
   "bin": {
     "save-page": "src/bin/cli.js"
   },
   "engines": {
     "node": ">=14"
   },
-  "files": [
-    "src"
-  ],
   "scripts": {
     "test": "DEBUG=page-loader*,axios jest",
     "coverage": "jest --coverage"
@@ -26,33 +22,28 @@
   "bugs": {
     "url": "https://github.com/Cred1Tor/backend-project-lvl3/issues"
   },
+  "type": "module",
   "jest": {
     "testEnvironment": "node"
   },
-  "babel": {
-    "plugins": [
-      "transform-es2015-modules-commonjs"
-    ]
-  },
   "homepage": "https://github.com/Cred1Tor/backend-project-lvl3#readme",
   "dependencies": {
-    "axios": "^0.19.2",
-    "axios-debug-log": "^0.8.0",
+    "axios": "^0.21.0",
+    "axios-debug-log": "^0.8.2",
     "cheerio": "^1.0.0-rc.3",
-    "commander": "^5.1.0",
+    "commander": "^6.2.0",
     "debug": "^4.2.0",
     "listr": "^0.14.3",
-    "lodash": "^4.17.19"
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
-    "babel-jest": "^26.6.3",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-jest": "^23.8.2",
+    "@jest/globals": "^26.6.2",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.0",
     "jest": "^26.6.3",
     "jest-cli": "^26.6.3",
-    "nock": "^12.0.3"
+    "nock": "^13.0.5"
   }
 }
