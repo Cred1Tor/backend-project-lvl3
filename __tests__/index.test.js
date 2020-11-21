@@ -3,8 +3,8 @@ import { promises as fs } from 'fs';
 import nock from 'nock';
 import os from 'os';
 import _ from 'lodash';
-import load from '../src/index.js';
 import { fileURLToPath } from 'url';
+import load from '../src/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
