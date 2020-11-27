@@ -4,6 +4,7 @@ import nock from 'nock';
 import os from 'os';
 import _ from 'lodash';
 import { fileURLToPath } from 'url';
+import { beforeAll } from '@jest/globals';
 import load from '../src/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,22 +13,26 @@ const __dirname = path.dirname(__filename);
 const fixturesDirpath = path.join(__dirname, '__fixtures__');
 const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
 const readFile = (baseDir, filename, encoding = 'utf-8') => fs.readFile(path.join(baseDir, filename), encoding);
+let currentTestDir;
+let testNum = 1;
+let expectedHtml;
+let srcHtml;
+let srcHtml2;
+let textAsset;
+let imageAsset;
 
-beforeEach(async () => {
+beforeAll(async () => {
   await fs.rmdir(testResultDirpath, { recursive: true }).catch(_.noop);
   await fs.mkdir(testResultDirpath);
-});
 
-test('load and save a page with assets', async () => {
   const promises = [
     readFile(fixturesDirpath, 'page.html'),
+    readFile(fixturesDirpath, 'page2.html'),
     readFile(fixturesDirpath, 'result.html'),
     readFile(fixturesDirpath, '123.css'),
     readFile(fixturesDirpath, 'pogey.png', null),
   ];
-  const [srcHtml, expectedHtml, textAsset, imageAsset] = await Promise.all(promises);
-  const test1Dirpath = path.join(testResultDirpath, 'test1');
-  await fs.mkdir(test1Dirpath);
+  [srcHtml, srcHtml2, expectedHtml, textAsset, imageAsset] = await Promise.all(promises);
 
   nock('https://fakeaddress.com')
     .get('/')
@@ -41,14 +46,34 @@ test('load and save a page with assets', async () => {
     .get('/pogey.png')
     .reply(200, imageAsset);
 
-  await load('https://fakeaddress.com/', test1Dirpath);
+  nock('https://fakeaddress2.com')
+    .get('/')
+    .reply(200, srcHtml2);
 
-  const promises2 = [
-    readFile(test1Dirpath, 'fakeaddress-com.html'),
-    readFile(test1Dirpath, 'fakeaddress-com_files/files-123.css'),
-    readFile(test1Dirpath, 'fakeaddress-com_files/pogey.png', null),
-    fs.readdir(path.join(test1Dirpath, '')),
-    fs.readdir(path.join(test1Dirpath, 'fakeaddress-com_files')),
+  nock('https://fakeaddress3.com')
+    .get('/')
+    .reply(200, '');
+
+  nock('https://unknownurl.com')
+    .get('/')
+    .reply(404, '');
+});
+
+beforeEach(async () => {
+  currentTestDir = path.join(testResultDirpath, `test${testNum}`);
+  await fs.mkdir(currentTestDir);
+  testNum += 1;
+});
+
+test('load and save a page with assets', async () => {
+  await load('https://fakeaddress.com/', currentTestDir);
+
+  const promises = [
+    readFile(currentTestDir, 'fakeaddress-com.html'),
+    readFile(currentTestDir, 'fakeaddress-com_files/files-123.css'),
+    readFile(currentTestDir, 'fakeaddress-com_files/pogey.png', null),
+    fs.readdir(path.join(currentTestDir, '')),
+    fs.readdir(path.join(currentTestDir, 'fakeaddress-com_files')),
   ];
 
   const [
@@ -57,7 +82,7 @@ test('load and save a page with assets', async () => {
     resultImageAsset,
     dir1Files,
     dir2Files,
-  ] = await Promise.all(promises2);
+  ] = await Promise.all(promises);
 
   expect(resultHtml).toBe(expectedHtml);
   expect(resultTextAsset).toBe(textAsset);
@@ -67,19 +92,11 @@ test('load and save a page with assets', async () => {
 });
 
 test('load and save a page without assets', async () => {
-  const srcHtml = await readFile(fixturesDirpath, 'page2.html');
-  const test2Dirpath = path.join(testResultDirpath, 'test2');
-  await fs.mkdir(test2Dirpath);
+  await load('https://fakeaddress2.com/', currentTestDir);
+  const resultHtml = await readFile(currentTestDir, 'fakeaddress2-com.html');
+  const dirFiles = await fs.readdir(currentTestDir);
 
-  nock('https://fakeaddress2.com')
-    .get('/')
-    .reply(200, srcHtml);
-
-  await load('https://fakeaddress2.com/', test2Dirpath);
-  const resultHtml = await readFile(test2Dirpath, 'fakeaddress2-com.html');
-  const dirFiles = await fs.readdir(test2Dirpath);
-
-  expect(resultHtml).toBe(srcHtml);
+  expect(resultHtml).toBe(srcHtml2);
   expect(dirFiles).toHaveLength(1);
 });
 
@@ -87,32 +104,22 @@ test('errors', async () => {
   const promise1 = load('wrong url', testResultDirpath);
   await expect(promise1).rejects.toThrow('Invalid URL');
 
-  nock('https://fakeaddress3.com')
-    .get('/')
-    .reply(200, '');
-
   const badPath = path.join(testResultDirpath, 'unknown');
   const promise2 = load('https://fakeaddress3.com', badPath);
   await expect(promise2).rejects.toThrow('ENOENT');
 
-  const test3Dirpath = path.join(testResultDirpath, 'test3');
-  await fs.mkdir(test3Dirpath);
-  const filepath = path.join(test3Dirpath, 'fakeaddress3-com.html');
-  const dirpath = path.join(test3Dirpath, 'fakeaddress3-com_files');
+  const filepath = path.join(currentTestDir, 'fakeaddress3-com.html');
+  const dirpath = path.join(currentTestDir, 'fakeaddress3-com_files');
 
   await fs.writeFile(filepath, '');
-  const promise3 = load('https://fakeaddress3.com', test3Dirpath);
+  const promise3 = load('https://fakeaddress3.com', currentTestDir);
   await expect(promise3).rejects.toThrow('already exists');
+
   await fs.unlink(filepath);
   await fs.mkdir(dirpath);
-
-  const promise4 = load('https://fakeaddress3.com', test3Dirpath);
+  const promise4 = load('https://fakeaddress3.com', currentTestDir);
   await expect(promise4).rejects.toThrow('already exists');
 
-  nock('https://unknownurl.com')
-    .get('/')
-    .reply(404, '');
-
-  const promise5 = load('https://unknownurl.com', test3Dirpath);
+  const promise5 = load('https://unknownurl.com', currentTestDir);
   await expect(promise5).rejects.toThrow('404');
 });
