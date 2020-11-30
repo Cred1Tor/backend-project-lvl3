@@ -2,7 +2,7 @@
 
 import program from 'commander';
 import { createRequire } from 'module';
-import load from '../src/index.js';
+import load from '../index.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json');
