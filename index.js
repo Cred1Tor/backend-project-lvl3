@@ -56,7 +56,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
         return fs.stat(destDir)
           .then((stats) => {
             if (!stats.isDirectory()) {
-              throw new Error(`${destDir} is not a directory`, destDir);
+              throw new Error(`ENOTDIR: ${destDir} is not a directory`, destDir);
             }
           })
           .then(() => fs.access(ctx.destFilepath)
