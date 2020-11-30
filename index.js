@@ -25,12 +25,6 @@ const convertUrlToFileName = (sourceUrl) => {
   return fileName;
 };
 
-const convertRelUrlToFileName = (relUrl) => {
-  const pathData = path.parse(relUrl);
-  const fileName = `${pathData.dir}-${pathData.name}`.replace(/^-/, '').replace(/[^a-zA-Z0-9]/g, '-');
-  return `${fileName}${pathData.ext}`;
-};
-
 const saveWebPageToFile = (source, dest) => {
   log(`saving page ${source} to file ${dest}`);
   return axios.get(source, { responseType: 'arraybuffer' })
@@ -100,7 +94,8 @@ export default (sourceUrl, destDir = process.cwd()) => {
             log('url is absolute, skip');
           } catch (e) {
             log('url is relative, process');
-            const elFilename = convertRelUrlToFileName(elSrc);
+            const fullUrl = new URL(elSrc, sourceUrl);
+            const elFilename = convertUrlToFileName(fullUrl);
             const elFilepath = path.join(ctx.assetsDirName, elFilename);
             log(`new rel url: ${elFilepath}`);
             $el.attr(urlAttrName, elFilepath);
