@@ -1,6 +1,7 @@
 # Page Loader
 
-[![Github Actions Status](https://github.com/Cred1Tor/backend-project-lvl3/workflows/Node%20CI/badge.svg)](https://github.com/Cred1Tor/backend-project-lvl3/actions)
+[![Github Actions Status](https://github.com/Cred1Tor/backend-project-lvl3/workflows/Node%20CI/badge.svg)](https://github.com/Cred1Tor/backend-project-lvl3/actions?query=workflow%3A"Node+CI")
+[![Github Actions Status](https://github.com/Cred1Tor/backend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/Cred1Tor/backend-project-lvl3/actions?query=workflow%3Ahexlet-check)
 [![Maintainability](https://api.codeclimate.com/v1/badges/fedd2dfd19d6d98765df/maintainability)](https://codeclimate.com/github/Cred1Tor/backend-project-lvl3/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fedd2dfd19d6d98765df/test_coverage)](https://codeclimate.com/github/Cred1Tor/backend-project-lvl3/test_coverage)
 
