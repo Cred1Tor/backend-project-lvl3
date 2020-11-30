@@ -4,7 +4,7 @@
   "description": "Page loader, a tool for downloading and saving web pages.",
   "main": "src/index.js",
   "bin": {
-    "save-page": "src/bin/cli.js"
+    "page-loader": "src/bin/cli.js"
   },
   "engines": {
     "node": ">=14"
