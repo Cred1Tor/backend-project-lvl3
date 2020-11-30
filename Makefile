@@ -1,8 +1,5 @@
 install: install-deps
 
-run:
-	src/bin/cli.js --output=.. http://starbuzzcoffee.com
-
 install-deps:
 	npm ci
 
