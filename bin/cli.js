@@ -2,10 +2,10 @@
 
 import program from 'commander';
 import { createRequire } from 'module';
-import load from '../index.js';
+import load from '../src/index.js';
 
 const require = createRequire(import.meta.url);
-const { version } = require('../../package.json');
+const { version } = require('../package.json');
 
 program.version(version)
   .description('Downloads a web page and saves it as html file.')
