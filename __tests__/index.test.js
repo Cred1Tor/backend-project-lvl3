@@ -70,8 +70,8 @@ test('load and save a page with assets', async () => {
 
   const promises = [
     readFile(currentTestDir, 'fakeaddress-com.html'),
-    readFile(currentTestDir, 'fakeaddress-com_files/files-123.css'),
-    readFile(currentTestDir, 'fakeaddress-com_files/pogey.png', null),
+    readFile(currentTestDir, 'fakeaddress-com_files/fakeaddress-com-files-123.css'),
+    readFile(currentTestDir, 'fakeaddress-com_files/fakeaddress-com-pogey.png', null),
     fs.readdir(path.join(currentTestDir, '')),
     fs.readdir(path.join(currentTestDir, 'fakeaddress-com_files')),
   ];
