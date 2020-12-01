@@ -17,18 +17,17 @@ const tagSrcMapping = {
   img: 'src',
 };
 
-const convertUrlToFileName = (sourceUrl) => {
-  const urlData = new URL(sourceUrl);
-  const urlWithoutOrigin = `${urlData.host}${urlData.pathname}`;
+const convertUrlToFileNameWithoutExt = (sourceUrl) => {
+  const { host, pathname } = new URL(sourceUrl);
+  const urlWithoutOrigin = `${host}${pathname}`;
   const fileName = urlWithoutOrigin.replace(/[^a-zA-Z0-9]/g, '-').replace(/-$/, '');
   return fileName;
 };
 
-const convertRelUrlToFileName = (relUrl, baseUrl) => {
-  const fullUrl = new URL(relUrl, baseUrl);
-  const { ext } = path.parse(relUrl);
-  const urlWithoutExt = fullUrl.href.slice(0, fullUrl.href.length - ext.length);
-  const fileName = convertUrlToFileName(urlWithoutExt);
+const convertUrlToFileNameWithExt = (sourceUrl) => {
+  const { ext } = path.parse(sourceUrl);
+  const urlWithoutExt = sourceUrl.slice(0, sourceUrl.length - ext.length);
+  const fileName = convertUrlToFileNameWithoutExt(urlWithoutExt);
   const newExt = ext || '.html';
   return `${fileName}${newExt}`;
 };
@@ -47,7 +46,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
     {
       title: `Connecting to ${sourceUrl}`,
       task: (ctx) => {
-        const baseName = convertUrlToFileName(sourceUrl);
+        const baseName = convertUrlToFileNameWithoutExt(sourceUrl);
         const fileName = `${baseName}.html`;
         ctx.srcHostname = new URL(sourceUrl).hostname;
         ctx.assetsDirName = `${baseName}_files`;
@@ -103,7 +102,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
             log('url is absolute, skip');
           } else {
             log('url is relative, process');
-            const elFilename = convertRelUrlToFileName(elSrc, sourceUrl);
+            const elFilename = convertUrlToFileNameWithExt(fullSrcUrl.href);
             const elFilepath = path.join(ctx.assetsDirName, elFilename);
             log(`new rel url: ${elFilepath}`);
             $el.attr(urlAttrName, elFilepath);
