@@ -9,8 +9,7 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 require('axios-debug-log');
 
-const log = debug('page-loader:log');
-const error = debug('page-loader:error');
+const log = debug('page-loader');
 
 const tagSrcMapping = {
   link: 'href',
@@ -138,7 +137,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
   ]);
 
   return tasks.run().catch((e) => {
-    error(e.message);
+    log(e.message);
     throw e;
   });
 };
