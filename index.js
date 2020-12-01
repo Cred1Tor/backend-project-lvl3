@@ -80,7 +80,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
               throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
             }))
           .then((response) => {
-            ctx.$ = cheerio.load(response.data);
+            ctx.$ = cheerio.load(response.data, { decodeEntities: false });
           });
       },
     },
