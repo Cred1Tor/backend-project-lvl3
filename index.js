@@ -29,7 +29,8 @@ const convertRelUrlToFileName = (relUrl, baseUrl) => {
   const { ext } = path.parse(relUrl);
   const urlWithoutExt = fullUrl.href.slice(0, fullUrl.href.length - ext.length);
   const fileName = convertUrlToFileName(urlWithoutExt);
-  return `${fileName}${ext}`;
+  const newExt = ext || '.html';
+  return `${fileName}${newExt}`;
 };
 
 const saveWebPageToFile = (source, dest) => {
