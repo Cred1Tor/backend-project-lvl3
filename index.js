@@ -25,10 +25,12 @@ const convertUrlToFileName = (sourceUrl) => {
   return fileName;
 };
 
-const convertRelUrlToFileName = (relUrl, baseName) => {
-  const pathData = path.parse(relUrl);
-  const fileName = `${pathData.dir}-${pathData.name}`.replace(/^-/, '').replace(/[^a-zA-Z0-9]/g, '-');
-  return `${baseName}-${fileName}${pathData.ext}`;
+const convertRelUrlToFileName = (relUrl, baseUrl) => {
+  const fullUrl = new URL(relUrl, baseUrl);
+  const { ext } = path.parse(relUrl);
+  const urlWithoutExt = fullUrl.href.slice(0, -ext.length);
+  const fileName = convertUrlToFileName(urlWithoutExt);
+  return `${fileName}${ext}`;
 };
 
 const saveWebPageToFile = (source, dest) => {
@@ -45,9 +47,9 @@ export default (sourceUrl, destDir = process.cwd()) => {
     {
       title: `Connecting to ${sourceUrl}`,
       task: (ctx) => {
-        ctx.baseName = convertUrlToFileName(sourceUrl);
-        const fileName = `${ctx.baseName}.html`;
-        ctx.assetsDirName = `${ctx.baseName}_files`;
+        const baseName = convertUrlToFileName(sourceUrl);
+        const fileName = `${baseName}.html`;
+        ctx.assetsDirName = `${baseName}_files`;
         ctx.destFilepath = path.join(destDir, fileName);
         ctx.destAssetsDirpath = path.join(destDir, ctx.assetsDirName);
 
@@ -101,7 +103,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
             log('url is absolute, skip');
           } catch (e) {
             log('url is relative, process');
-            const elFilename = convertRelUrlToFileName(elSrc, ctx.baseName);
+            const elFilename = convertRelUrlToFileName(elSrc, sourceUrl);
             const elFilepath = path.join(ctx.assetsDirName, elFilename);
             log(`new rel url: ${elFilepath}`);
             $el.attr(urlAttrName, elFilepath);
