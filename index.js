@@ -27,7 +27,7 @@ const convertUrlToFileName = (sourceUrl) => {
 const convertRelUrlToFileName = (relUrl, baseUrl) => {
   const fullUrl = new URL(relUrl, baseUrl);
   const { ext } = path.parse(relUrl);
-  const urlWithoutExt = fullUrl.href.slice(0, -ext.length);
+  const urlWithoutExt = fullUrl.href.slice(0, fullUrl.href.length - ext.length);
   const fileName = convertUrlToFileName(urlWithoutExt);
   return `${fileName}${ext}`;
 };
