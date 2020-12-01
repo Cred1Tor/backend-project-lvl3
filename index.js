@@ -35,7 +35,7 @@ const convertRelUrlToFileName = (relUrl, baseUrl) => {
 const saveWebPageToFile = (source, dest) => {
   log(`saving page ${source} to file ${dest}`);
   return axios.get(source, { responseType: 'arraybuffer' })
-    .then((response) => fs.writeFile(dest, response.data))
+    .then((response) => fs.writeFile(dest, response.data, 'utf-8'))
     .catch((e) => {
       throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
     });
@@ -131,7 +131,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
     },
     {
       title: 'Saving main page',
-      task: (ctx) => fs.writeFile(ctx.destFilepath, ctx.$.html())
+      task: (ctx) => fs.writeFile(ctx.destFilepath, ctx.$.html(), 'utf-8')
         .then(() => log(`${ctx.destFilepath} written\nfinished\n---------------------------`)),
     },
   ]);
