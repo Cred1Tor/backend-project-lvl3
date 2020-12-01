@@ -49,6 +49,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
       task: (ctx) => {
         const baseName = convertUrlToFileName(sourceUrl);
         const fileName = `${baseName}.html`;
+        ctx.srcHostname = new URL(sourceUrl).hostname;
         ctx.assetsDirName = `${baseName}_files`;
         ctx.destFilepath = path.join(destDir, fileName);
         ctx.destAssetsDirpath = path.join(destDir, ctx.assetsDirName);
@@ -96,18 +97,16 @@ export default (sourceUrl, destDir = process.cwd()) => {
           const urlAttrName = tagSrcMapping[el.tagName];
           const elSrc = $el.attr(urlAttrName);
           log(`working on tag ${el.tagName} with ${urlAttrName}="${elSrc}"`);
+          const fullSrcUrl = new URL(elSrc, sourceUrl);
 
-          try {
-            // eslint-disable-next-line no-new
-            new URL(elSrc); // throw if url is relative
+          if (fullSrcUrl.hostname !== ctx.srcHostname) {
             log('url is absolute, skip');
-          } catch (e) {
+          } else {
             log('url is relative, process');
             const elFilename = convertRelUrlToFileName(elSrc, sourceUrl);
             const elFilepath = path.join(ctx.assetsDirName, elFilename);
             log(`new rel url: ${elFilepath}`);
             $el.attr(urlAttrName, elFilepath);
-            const absSrcUrl = new URL(elSrc, sourceUrl);
             const promise = fs.mkdir(ctx.destAssetsDirpath)
               .then(() => log(`${ctx.destAssetsDirpath} dir created`))
               .catch((err) => {
@@ -117,7 +116,7 @@ export default (sourceUrl, destDir = process.cwd()) => {
                 throw err;
               })
               .then(() => saveWebPageToFile(
-                absSrcUrl.href,
+                fullSrcUrl.href,
                 path.join(ctx.destAssetsDirpath, elFilename),
               ));
             assetTasks.add({
