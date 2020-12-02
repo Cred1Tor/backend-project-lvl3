@@ -10,8 +10,8 @@ A tool for downloading and saving web pages.
 ## Installation
 
 ```
-git clone git@github.com:Cred1Tor/hexlet-git.git
-cd hexlet-git
+git clone git@github.com:Cred1Tor/backend-project-lvl3.git page-loader
+cd page-loader
 sudo make link
 ```
 
