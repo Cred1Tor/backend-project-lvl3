@@ -5,6 +5,7 @@ import { promises as fs } from 'fs';
 import debug from 'debug';
 import Listr from 'listr';
 import { createRequire } from 'module';
+import { saveWebPageToFile, convertUrlToFileNameWithExt, convertUrlToFileNameWithoutExt } from './utils';
 
 const require = createRequire(import.meta.url);
 require('axios-debug-log');
@@ -15,30 +16,6 @@ const tagSrcMapping = {
   link: 'href',
   script: 'src',
   img: 'src',
-};
-
-const convertUrlToFileNameWithoutExt = (sourceUrl) => {
-  const { host, pathname } = new URL(sourceUrl);
-  const urlWithoutOrigin = `${host}${pathname}`;
-  const fileName = urlWithoutOrigin.replace(/[^a-zA-Z0-9]/g, '-').replace(/-$/, '');
-  return fileName;
-};
-
-const convertUrlToFileNameWithExt = (sourceUrl) => {
-  const { ext } = path.parse(sourceUrl);
-  const urlWithoutExt = sourceUrl.slice(0, sourceUrl.length - ext.length);
-  const fileName = convertUrlToFileNameWithoutExt(urlWithoutExt);
-  const newExt = ext || '.html';
-  return `${fileName}${newExt}`;
-};
-
-const saveWebPageToFile = (source, dest) => {
-  log(`saving page ${source} to file ${dest}`);
-  return axios.get(source, { responseType: 'arraybuffer' })
-    .then((response) => fs.writeFile(dest, response.data, 'utf-8'))
-    .catch((e) => {
-      throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
-    });
 };
 
 export default (sourceUrl, destDir = process.cwd()) => {
@@ -114,10 +91,12 @@ export default (sourceUrl, destDir = process.cwd()) => {
                 }
                 throw err;
               })
-              .then(() => saveWebPageToFile(
-                fullSrcUrl.href,
-                path.join(ctx.destAssetsDirpath, elFilename),
-              ));
+              .then(() => {
+                const source = fullSrcUrl.href;
+                const dest = path.join(ctx.destAssetsDirpath, elFilename);
+                log(`saving page ${source} to file ${dest}`);
+                return saveWebPageToFile(source, dest);
+              });
             assetTasks.add({
               title: `Saving ${elSrc}`,
               task: () => promise,
