@@ -97,7 +97,7 @@ test('load and save a page without assets', async () => {
   const dirFiles = await fs.readdir(currentTestDir);
 
   expect(resultHtml).toBe(srcHtml2);
-  expect(dirFiles).toHaveLength(1);
+  expect(dirFiles).toHaveLength(2);
 });
 
 test('errors', async () => {
