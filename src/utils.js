@@ -16,7 +16,7 @@ const tagSrcMapping = {
 export const convertUrlToFileNameWithoutExt = (sourceUrl) => {
   const { host, pathname } = new URL(sourceUrl);
   const urlWithoutOrigin = `${host}${pathname}`;
-  const fileName = urlWithoutOrigin.replace(/[^a-zA-Z0-9]/g, '-').replace(/-$/, '');
+  const fileName = urlWithoutOrigin.replace(/\W/g, '-').replace(/-$/, '');
   return fileName;
 };
 
