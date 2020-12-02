@@ -2,7 +2,10 @@
   "name": "@creditor/page-loader",
   "version": "1.2.0",
   "description": "Page loader, a tool for downloading and saving web pages.",
-  "keywords": ["hexlet", "backend-project-lvl-3"],
+  "keywords": [
+    "hexlet",
+    "backend-project-lvl-3"
+  ],
   "main": "src/index.js",
   "bin": {
     "page-loader": "src/bin/cli.js"
