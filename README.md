@@ -9,9 +9,11 @@ A tool for downloading and saving web pages.
 
 ## Installation
 
-```git clone git@github.com:Cred1Tor/hexlet-git.git
+```
+git clone git@github.com:Cred1Tor/hexlet-git.git
 cd hexlet-git
-sudo make link```
+sudo make link
+```
 
 ## Usage
 
