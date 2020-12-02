@@ -101,8 +101,7 @@ test('load and save a page without assets', async () => {
 });
 
 test('errors', async () => {
-  const promise1 = load('wrong url', testResultDirpath);
-  await expect(promise1).rejects.toThrow('Invalid URL');
+  expect(() => load('wrong url', testResultDirpath)).toThrow('Invalid URL');
 
   const badPath = path.join(testResultDirpath, 'unknown');
   const promise2 = load('https://fakeaddress3.com', badPath);
