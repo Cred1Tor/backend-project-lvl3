@@ -26,5 +26,9 @@ export default (sourceUrl, destDir = process.cwd()) => {
       return fs.mkdir(destAssetsDirpath);
     }).then(() => loadAssets($, sourceUrl, srcHostname, destAssetsDirpath, assetsDirName))
     .then(() => fs.writeFile(destFilepath, $.html(), 'utf-8'))
-    .then(() => log(`${destFilepath} written\nfinished\n---------------------------`));
+    .then(() => log(`${destFilepath} written\nfinished\n---------------------------`))
+    .catch((e) => {
+      log(e.message);
+      throw e;
+    });
 };
