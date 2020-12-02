@@ -5,7 +5,7 @@ import { promises as fs } from 'fs';
 import debug from 'debug';
 import Listr from 'listr';
 import { createRequire } from 'module';
-import { saveWebPageToFile, convertUrlToFileNameWithExt, convertUrlToFileNameWithoutExt } from './utils';
+import { saveWebPageToFile, convertUrlToFileNameWithExt, convertUrlToFileNameWithoutExt } from './utils.js';
 
 const require = createRequire(import.meta.url);
 require('axios-debug-log');
