@@ -51,6 +51,7 @@ beforeAll(async () => {
     .reply(200, srcHtml2);
 
   nock('https://fakeaddress3.com')
+    .persist()
     .get('/')
     .reply(200, '');
 
