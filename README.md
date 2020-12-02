@@ -9,7 +9,9 @@ A tool for downloading and saving web pages.
 
 ## Installation
 
-`npm install -g @creditor/page-loader`
+```git clone git@github.com:Cred1Tor/hexlet-git.git
+cd hexlet-git
+sudo make link```
 
 ## Usage
 
