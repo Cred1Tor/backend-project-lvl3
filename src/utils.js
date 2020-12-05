@@ -58,20 +58,10 @@ export const loadAssets = ($, sourceUrl, destAssetsDirpath, assetsDirName) => {
             const elFilepath = path.join(assetsDirName, elFilename);
             log(`new rel url: ${elFilepath}`);
             $el.attr(urlAttrName, elFilepath);
-            const promise = fs.mkdir(destAssetsDirpath)
-              .then(() => log(`${destAssetsDirpath} dir created`))
-              .catch((err) => {
-                if (err.code === 'EEXIST') {
-                  return;
-                }
-                throw err;
-              })
-              .then(() => {
-                const source = fullSrcUrl.href;
-                const dest = path.join(destAssetsDirpath, elFilename);
-                log(`saving page ${source} to file ${dest}`);
-                return saveWebPageToFile(source, dest);
-              });
+            const source = fullSrcUrl.href;
+            const dest = path.join(destAssetsDirpath, elFilename);
+            log(`saving page ${source} to file ${dest}`);
+            const promise = saveWebPageToFile(source, dest);
             assetTasks.add({
               title: `Saving ${elSrc}`,
               task: () => promise,
