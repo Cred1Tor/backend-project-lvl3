@@ -14,11 +14,11 @@ program.version(version)
   .action((srcUrl) => {
     try {
       load(srcUrl, program.output)
-        .then(() => console.log(`${srcUrl} saved in ${program.output}`)
-          .catch((e) => {
-            console.error(e.message);
-            process.exitCode = 1;
-          }));
+        .then(() => console.log(`${srcUrl} saved in ${program.output}`))
+        .catch((e) => {
+          console.error(e.message);
+          process.exitCode = 1;
+        });
     } catch (e) {
       console.error(e.message);
       process.exitCode = 1;
