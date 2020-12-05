@@ -9,7 +9,7 @@ const { version } = require('../../package.json');
 
 program.version(version)
   .description('Downloads a web page and saves it as html file.')
-  .option('--output <dir>', 'output directory', process.cwd())
+  .option('-o, --output <dir>', 'output directory', process.cwd())
   .arguments('<srcUrl>')
   .action((srcUrl) => {
     try {
