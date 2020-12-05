@@ -34,7 +34,8 @@ export const saveWebPageToFile = (source, dest) => axios.get(source, { responseT
     throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
   });
 
-export const loadAssets = ($, sourceUrl, srcHostname, destAssetsDirpath, assetsDirName) => {
+export const loadAssets = ($, sourceUrl, destAssetsDirpath, assetsDirName) => {
+  const srcHostname = new URL(sourceUrl).hostname;
   const tasks = new Listr([
     {
       title: 'Saving assets',
