@@ -34,39 +34,49 @@ export const saveWebPageToFile = (source, dest) => axios.get(source, { responseT
     throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
   });
 
-export const loadAssets = ($, sourceUrl, destAssetsDirpath, assetsDirName) => {
+export const convertAssetUrls = ($, sourceUrl, assetsDirName) => {
   const srcHostname = new URL(sourceUrl).hostname;
+  const elements = $('link[href], script[src], img[src]');
+  const assetUrls = [];
+
+  elements.each((_i, el) => {
+    const $el = cheerio(el);
+    const urlAttrName = tagSrcMapping[el.tagName];
+    const elSrc = $el.attr(urlAttrName);
+    log(`working on tag ${el.tagName} with ${urlAttrName}="${elSrc}"`);
+    const fullSrcUrl = new URL(elSrc, sourceUrl);
+
+    if (fullSrcUrl.hostname !== srcHostname) {
+      log('url is absolute, skip');
+    } else {
+      log('url is relative, process');
+      const elFilename = convertUrlToFileNameWithExt(fullSrcUrl.href);
+      const assetFilepath = path.join(assetsDirName, elFilename);
+      log(`asset url: ${assetFilepath}`);
+      $el.attr(urlAttrName, assetFilepath);
+      const source = fullSrcUrl.href;
+      assetUrls.push({ source, assetFilepath });
+    }
+  });
+
+  return assetUrls;
+};
+
+export const loadAssets = (assetUrls, destDir) => {
   const tasks = new Listr([
     {
       title: 'Saving assets',
       task: () => {
-        const elements = $('link[href], script[src], img[src]');
         const assetTasks = new Listr([], { concurrent: true, exitOnError: false });
 
-        elements.each((_i, el) => {
-          const $el = cheerio(el);
-          const urlAttrName = tagSrcMapping[el.tagName];
-          const elSrc = $el.attr(urlAttrName);
-          log(`working on tag ${el.tagName} with ${urlAttrName}="${elSrc}"`);
-          const fullSrcUrl = new URL(elSrc, sourceUrl);
-
-          if (fullSrcUrl.hostname !== srcHostname) {
-            log('url is absolute, skip');
-          } else {
-            log('url is relative, process');
-            const elFilename = convertUrlToFileNameWithExt(fullSrcUrl.href);
-            const elFilepath = path.join(assetsDirName, elFilename);
-            log(`new rel url: ${elFilepath}`);
-            $el.attr(urlAttrName, elFilepath);
-            const source = fullSrcUrl.href;
-            const dest = path.join(destAssetsDirpath, elFilename);
-            log(`saving page ${source} to file ${dest}`);
-            const promise = saveWebPageToFile(source, dest);
-            assetTasks.add({
-              title: `Saving ${elSrc}`,
-              task: () => promise,
-            });
-          }
+        assetUrls.forEach(({ source, assetFilepath }) => {
+          const dest = path.join(destDir, assetFilepath);
+          log(`saving page ${source} to file ${dest}`);
+          const promise = saveWebPageToFile(source, dest);
+          assetTasks.add({
+            title: `Saving ${source}`,
+            task: () => promise,
+          });
         });
 
         return assetTasks;

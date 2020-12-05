@@ -3,7 +3,7 @@ import path from 'path';
 import cheerio from 'cheerio';
 import { promises as fs } from 'fs';
 import debug from 'debug';
-import { convertUrlToFileNameWithoutExt, loadAssets } from './utils.js';
+import { convertUrlToFileNameWithoutExt, convertAssetUrls, loadAssets } from './utils.js';
 import 'axios-debug-log';
 
 const log = debug('page-loader');
@@ -23,7 +23,13 @@ export default (sourceUrl, destDir = process.cwd()) => {
     .then((response) => {
       $ = cheerio.load(response.data, { decodeEntities: false });
       return fs.mkdir(destAssetsDirpath);
-    }).then(() => loadAssets($, sourceUrl, destAssetsDirpath, assetsDirName))
+    }).then(() => convertAssetUrls($, sourceUrl, assetsDirName))
+    .then((assetUrls) => {
+      log('URLs converted');
+      return assetUrls;
+    })
+    .then((assetUrls) => loadAssets(assetUrls, destDir))
+    .then(() => log('assets saved'))
     .then(() => fs.writeFile(destFilepath, $.html(), 'utf-8'))
     .then(() => log(`${destFilepath} written\nfinished\n---------------------------`))
     .catch((e) => {
