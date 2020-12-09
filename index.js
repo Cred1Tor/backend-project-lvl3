@@ -23,15 +23,18 @@ export default (sourceUrl, destDir = process.cwd()) => {
     .then((response) => {
       $ = cheerio.load(response.data, { decodeEntities: false });
       return fs.mkdir(destAssetsDirpath);
-    }).then(() => convertAssetUrls($, sourceUrl, assetsDirName))
-    .then((assetUrls) => {
-      log('URLs converted');
-      return assetUrls;
+    }).then(() => {
+      log('looking for assets');
+      convertAssetUrls($, sourceUrl, assetsDirName);
     })
-    .then((assetUrls) => loadAssets(assetUrls, destDir))
-    .then(() => log('assets saved'))
-    .then(() => fs.writeFile(destFilepath, $.html(), 'utf-8'))
-    .then(() => log(`${destFilepath} written\nfinished\n---------------------------`))
+    .then((assetUrls) => {
+      log(`assets to save: ${assetUrls.length}`);
+      loadAssets(assetUrls, destDir);
+    })
+    .then(() => {
+      log(`saving main page to ${destFilepath}`);
+      fs.writeFile(destFilepath, $.html(), 'utf-8');
+    })
     .catch((e) => {
       log(e.message);
       throw e;
