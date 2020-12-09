@@ -3,7 +3,7 @@ import path from 'path';
 import cheerio from 'cheerio';
 import { promises as fs } from 'fs';
 import debug from 'debug';
-import { convertUrlToFileNameWithoutExt, convertAssetUrls, loadAssets } from './utils.js';
+import { convertUrlToFileNameWithoutExt, convertAssetUrls, loadAssets } from './src/utils.js';
 import 'axios-debug-log';
 
 const log = debug('page-loader');

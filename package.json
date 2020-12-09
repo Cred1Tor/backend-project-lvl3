@@ -6,9 +6,9 @@
     "hexlet",
     "backend-project-lvl-3"
   ],
-  "main": "src/index.js",
+  "main": "index.js",
   "bin": {
-    "page-loader": "src/bin/cli.js"
+    "page-loader": "bin/cli.js"
   },
   "engines": {
     "node": ">=14"
