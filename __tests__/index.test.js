@@ -2,7 +2,6 @@ import path from 'path';
 import { promises as fs } from 'fs';
 import nock from 'nock';
 import os from 'os';
-import _ from 'lodash';
 import { fileURLToPath } from 'url';
 import { beforeAll } from '@jest/globals';
 import load from '../index.js';
@@ -11,10 +10,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const fixturesDirpath = path.join(__dirname, '__fixtures__');
-const testResultDirpath = path.join(os.tmpdir(), 'page-loader-tests');
 const readFile = (baseDir, filename, encoding = 'utf-8') => fs.readFile(path.join(baseDir, filename), encoding);
 let currentTestDir;
-let testNum = 1;
 let expectedHtml;
 let srcHtml;
 let srcHtml2;
@@ -22,9 +19,6 @@ let textAsset;
 let imageAsset;
 
 beforeAll(async () => {
-  await fs.rmdir(testResultDirpath, { recursive: true }).catch(_.noop);
-  await fs.mkdir(testResultDirpath);
-
   const promises = [
     readFile(fixturesDirpath, 'page.html'),
     readFile(fixturesDirpath, 'page2.html'),
@@ -61,9 +55,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  currentTestDir = path.join(testResultDirpath, `test${testNum}`);
-  await fs.mkdir(currentTestDir);
-  testNum += 1;
+  currentTestDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 });
 
 test('load and save a page with assets', async () => {
@@ -102,9 +94,9 @@ test('load and save a page without assets', async () => {
 });
 
 test('errors', async () => {
-  expect(() => load('wrong url', testResultDirpath)).toThrow('Invalid URL');
+  expect(() => load('wrong url', currentTestDir)).toThrow('Invalid URL');
 
-  const badPath = path.join(testResultDirpath, 'unknown');
+  const badPath = path.join(currentTestDir, 'unknown');
   const promise2 = load('https://fakeaddress3.com', badPath);
   await expect(promise2).rejects.toThrow('ENOENT');
 
