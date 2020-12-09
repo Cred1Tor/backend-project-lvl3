@@ -30,11 +30,11 @@ export default (sourceUrl, destDir = process.cwd()) => {
     })
     .then((assetUrls) => {
       log(`assets to save: ${assetUrls.length}`);
-      loadAssets(assetUrls, destDir);
+      return loadAssets(assetUrls, destDir);
     })
     .then(() => {
       log(`saving main page to ${destFilepath}`);
-      fs.writeFile(destFilepath, $.html(), 'utf-8');
+      return fs.writeFile(destFilepath, $.html(), 'utf-8');
     })
     .catch((e) => {
       log(e.message);
