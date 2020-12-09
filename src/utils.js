@@ -29,10 +29,7 @@ export const convertUrlToFileNameWithExt = (sourceUrl) => {
 };
 
 export const saveWebPageToFile = (source, dest) => axios.get(source, { responseType: 'arraybuffer' })
-  .then((response) => fs.writeFile(dest, response.data, 'utf-8'))
-  .catch((e) => {
-    throw new Error(`${e.message} (${e.config.method} ${e.config.url})`);
-  });
+  .then((response) => fs.writeFile(dest, response.data, 'utf-8'));
 
 export const convertAssetUrls = ($, sourceUrl, assetsDirName) => {
   const srcHostname = new URL(sourceUrl).hostname;
