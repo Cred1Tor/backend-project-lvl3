@@ -22,10 +22,11 @@ export default (sourceUrl, destDir = process.cwd()) => {
   return axios.get(sourceUrl)
     .then((response) => {
       $ = cheerio.load(response.data, { decodeEntities: false });
+      log(`making dir ${destAssetsDirpath}`);
       return fs.mkdir(destAssetsDirpath);
     }).then(() => {
       log('looking for assets');
-      convertAssetUrls($, sourceUrl, assetsDirName);
+      return convertAssetUrls($, sourceUrl, assetsDirName);
     })
     .then((assetUrls) => {
       log(`assets to save: ${assetUrls.length}`);
