@@ -26,7 +26,10 @@ export default (sourceUrl, destDir = process.cwd()) => {
       log(`saving main page to ${destFilepath}`);
       return fs.writeFile(destFilepath, html, 'utf-8').then(() => assetUrls);
     })
-    .then((assetUrls) => loadAssets(assetUrls, destDir))
+    .then((assetUrls) => {
+      log('saving local asset files');
+      return loadAssets(assetUrls, destDir);
+    })
     .catch((e) => {
       log(e.message);
       throw e;
