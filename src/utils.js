@@ -87,6 +87,7 @@ export const loadAssets = (assetUrls, destDir) => {
     },
   ]);
 
+  log(`assets to save: ${assetUrls.length}`);
   const promise = Promise.resolve().then(() => {
     const { dir } = path.parse(assetUrls[0].assetFilepath);
     const fullDirpath = path.join(destDir, dir);
