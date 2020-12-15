@@ -90,7 +90,7 @@ test('load and save a page without assets', async () => {
   const dirFiles = await fs.readdir(currentTestDir);
 
   expect(resultHtml).toBe(srcHtml2);
-  expect(dirFiles).toHaveLength(2);
+  expect(dirFiles).toHaveLength(1);
 });
 
 test('errors', async () => {
@@ -101,16 +101,16 @@ test('errors', async () => {
   await expect(promise2).rejects.toThrow('ENOENT');
 
   // const filepath = path.join(currentTestDir, 'fakeaddress3-com.html');
-  const dirpath = path.join(currentTestDir, 'fakeaddress3-com_files');
+  // const dirpath = path.join(currentTestDir, 'fakeaddress3-com_files');
 
   // await fs.writeFile(filepath, '');
   // const promise3 = load('https://fakeaddress3.com', currentTestDir);
   // await expect(promise3).rejects.toThrow('already exists');
 
   // await fs.unlink(filepath);
-  await fs.mkdir(dirpath);
-  const promise4 = load('https://fakeaddress3.com', currentTestDir);
-  await expect(promise4).rejects.toThrow('already exists');
+  // await fs.mkdir(dirpath);
+  // const promise4 = load('https://fakeaddress3.com', currentTestDir);
+  // await expect(promise4).rejects.toThrow('already exists');
 
   const promise5 = load('https://unknownurl.com', currentTestDir);
   await expect(promise5).rejects.toThrow('404');

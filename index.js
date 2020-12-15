@@ -27,10 +27,6 @@ export default (sourceUrl, destDir = process.cwd()) => {
       return fs.writeFile(destFilepath, html, 'utf-8').then(() => assetUrls);
     })
     .then((assetUrls) => {
-      log(`making dir ${destAssetsDirpath}`);
-      return fs.mkdir(destAssetsDirpath).then(() => assetUrls);
-    })
-    .then((assetUrls) => {
       log(`assets to save: ${assetUrls.length}`);
       return loadAssets(assetUrls, destDir);
     })

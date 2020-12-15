@@ -61,6 +61,11 @@ export const convertAssetUrls = (html, sourceUrl, assetsDirName) => {
 };
 
 export const loadAssets = (assetUrls, destDir) => {
+  if (assetUrls.length === 0) {
+    log('no local assets to save');
+    return false;
+  }
+
   const tasks = new Listr([
     {
       title: 'Saving assets',
@@ -82,5 +87,12 @@ export const loadAssets = (assetUrls, destDir) => {
     },
   ]);
 
-  return tasks.run();
+  const promise = Promise.resolve().then(() => {
+    const { dir } = path.parse(assetUrls[0].assetFilepath);
+    const fullDirpath = path.join(destDir, dir);
+    log(`creating assets directory ${fullDirpath}`);
+    return fs.mkdir(fullDirpath);
+  });
+
+  return promise.then(() => tasks.run());
 };
