@@ -31,7 +31,8 @@ export const convertUrlToFileNameWithExt = (sourceUrl) => {
 export const saveWebPageToFile = (source, dest) => axios.get(source, { responseType: 'arraybuffer' })
   .then((response) => fs.writeFile(dest, response.data, 'utf-8'));
 
-export const convertAssetUrls = ($, sourceUrl, assetsDirName) => {
+export const convertAssetUrls = (html, sourceUrl, assetsDirName) => {
+  const $ = cheerio.load(html, { decodeEntities: false });
   const srcHostname = new URL(sourceUrl).hostname;
   const elements = $('link[href], script[src], img[src]');
   const assetUrls = [];
@@ -56,7 +57,7 @@ export const convertAssetUrls = ($, sourceUrl, assetsDirName) => {
     }
   });
 
-  return assetUrls;
+  return { assetUrls, html: $.html() };
 };
 
 export const loadAssets = (assetUrls, destDir) => {
