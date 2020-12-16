@@ -100,18 +100,6 @@ test('errors', async () => {
   const promise2 = load('https://fakeaddress3.com', badPath);
   await expect(promise2).rejects.toThrow('ENOENT');
 
-  // const filepath = path.join(currentTestDir, 'fakeaddress3-com.html');
-  // const dirpath = path.join(currentTestDir, 'fakeaddress3-com_files');
-
-  // await fs.writeFile(filepath, '');
-  // const promise3 = load('https://fakeaddress3.com', currentTestDir);
-  // await expect(promise3).rejects.toThrow('already exists');
-
-  // await fs.unlink(filepath);
-  // await fs.mkdir(dirpath);
-  // const promise4 = load('https://fakeaddress3.com', currentTestDir);
-  // await expect(promise4).rejects.toThrow('already exists');
-
-  const promise5 = load('https://unknownurl.com', currentTestDir);
-  await expect(promise5).rejects.toThrow('404');
+  const promise3 = load('https://unknownurl.com', currentTestDir);
+  await expect(promise3).rejects.toThrow('404');
 });
